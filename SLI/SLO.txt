@@ -1,0 +1,25 @@
+To address the assignment, we need to define and implement two Service Level Indicators (SLIs) and their corresponding Service Level Objectives (SLOs) for the given user journey, which involves a client performing a checkout action and receiving an order list status code from the server. Let's break down the process:
+
+### Identifying SLIs
+Service Level Indicators (SLIs) are metrics that indicate the quality of service provided to users. For the given user journey, the following SLIs are relevant:
+
+1. **Checkout Request Latency**: Measures the time it takes for the server to process the `/Checkout` request and return a response. This is critical as users expect quick responses during the checkout process.
+2. **Order List Status Code Success Rate**: Measures the percentage of successful status codes (e.g., HTTP 200) returned when fetching the order list. This is important to ensure that the orders are being processed correctly.
+
+### Specifying and Implementing SLIs and SLOs
+
+1. **SLI 1: Checkout Request Latency**
+   - **Justification**: Ensuring low latency during the checkout process is crucial for a positive user experience. High latency can lead to user frustration and cart abandonment.
+   - **SLO**: 95% of checkout requests should have a latency of less than 300ms.
+   - **Implementation**:
+     - **Measurement**: Monitor the time taken from the moment the `/Checkout` request is sent to the time the server responds.
+     - **Tools**: Use application performance monitoring tools such as Prometheus and Grafana to collect and visualize latency metrics.
+
+2. **SLI 2: Order List Status Code Success Rate**
+   - **Justification**: A high success rate for order list status codes indicates that the checkout process is reliable and users are receiving correct order information.
+   - **SLO**: 99% of the order list responses should return a status code of 200 (OK).
+   - **Implementation**:
+     - **Measurement**: Track the HTTP status codes returned for the order list requests.
+     - **Tools**: Implement logging and monitoring using tools like ELK stack (Elasticsearch, Logstash, Kibana) or Datadog to track the status codes.
+### Summary
+To summarize, we identified two SLIs for the given user journey: Checkout Request Latency and Order List Status Code Success Rate. The corresponding SLOs ensure that the checkout process is fast and reliable, enhancing the overall user experience. By implementing monitoring and logging tools, we can measure and maintain these service levels effectively.

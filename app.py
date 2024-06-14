@@ -1,11 +1,13 @@
+from flask import Flask, render_template, request, redirect, url_for, Response
+from prometheus_client import Gauge, Counter, generate_latest
 
-from flask import Flask, render_template, request, redirect, url_for
-
-
-# Creating an instance of the Flask object for the web application.
 app = Flask(__name__)
 
-# Dictionary that will store the products and their prices
+# Define Prometheus metrics
+view_by_product = Counter('view_by_product', 'Product view count', ['code'])
+duration_checkout = Gauge('duration_checkout', 'Checkout duration')
+
+# Dictionary to store products and their prices
 products = {
     100: {'description': 'Hot Dog', 'price': 9.00},
     101: {'description': 'Double Hot Dog', 'price': 11.00},
@@ -17,10 +19,8 @@ products = {
     201: {'description': 'Iced Tea', 'price': 4.00}
 }
 
-
-# Variable created to store the total purchase amount
+# Variables to store the total purchase amount and the current order
 total_value = 0
-# List that stores the products of the current order.
 order = []
 
 @app.route('/', methods=['GET', 'POST'])
@@ -33,19 +33,20 @@ def index():
         code = int(request.form['code'])
 
         if code in products:
+            # Update the metrics
+            view_by_product.labels(code=code).inc()
+
             # Add the product price to the total purchase amount
             total_value += products[code]['price']
             # Add the product description to the order
             order.append(products[code]['description'])
             message = f'{products[code]["description"]} added to the order.'
-        
         else:
             message = 'Invalid option.'
 
         return render_template('index.html', products=products, message=message, order=order)
 
     return render_template('index.html', products=products, order=order)
-
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
@@ -66,7 +67,9 @@ def checkout():
 
     return render_template('checkout.html', total_value=total_value, order=order)
 
+@app.route('/metrics', methods=['GET'])
+def metrics():
+    return Response(generate_latest(), mimetype='text/plain')
 
 if __name__ == '__main__':
     app.run(debug=True)
-
